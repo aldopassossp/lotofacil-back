@@ -30,8 +30,8 @@ public class SugestaoPersonalizadaService {
         // Cria a especificação JPA dinamicamente com base nos filtros
         Specification<Todos> spec = criarEspecificacao(filtros);
 
-        // Configura paginação
-        Pageable pageable = PageRequest.of(filtros.getPage(), filtros.getSize());
+        // Configura paginação (padrão: página 0, tamanho 50)
+        Pageable pageable = PageRequest.of(0, 50);
 
         // Executa a busca
         return todosRepository.findAll(spec, pageable);
@@ -41,48 +41,135 @@ public class SugestaoPersonalizadaService {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // Adiciona predicados para cada filtro fornecido
-
-            // Filtros de Range Numérico
-            addRangePredicate(predicates, criteriaBuilder, root, "pontos", filtros.getPontosMin(), filtros.getPontosMax());
-            addRangePredicate(predicates, criteriaBuilder, root, "soma", filtros.getSomaMin(), filtros.getSomaMax());
-            addRangePredicate(predicates, criteriaBuilder, root, "impares", filtros.getImparesMin(), filtros.getImparesMax());
-            addRangePredicate(predicates, criteriaBuilder, root, "seqDois", filtros.getSeqDoisMin(), filtros.getSeqDoisMax());
-            addRangePredicate(predicates, criteriaBuilder, root, "seqTres", filtros.getSeqTresMin(), filtros.getSeqTresMax());
-            addRangePredicate(predicates, criteriaBuilder, root, "seqQuatro", filtros.getSeqQuatroMin(), filtros.getSeqQuatroMax());
-            addRangePredicate(predicates, criteriaBuilder, root, "seqCinco", filtros.getSeqCincoMin(), filtros.getSeqCincoMax());
-            addRangePredicate(predicates, criteriaBuilder, root, "seqSeis", filtros.getSeqSeisMin(), filtros.getSeqSeisMax());
-            addRangePredicate(predicates, criteriaBuilder, root, "seqSete", filtros.getSeqSeteMin(), filtros.getSeqSeteMax());
-            addRangePredicate(predicates, criteriaBuilder, root, "seqOito", filtros.getSeqOitoMin(), filtros.getSeqOitoMax());
-
-            // Filtros de Lista (Valores Exatos)
-            if (filtros.getLinhas() != null && !filtros.getLinhas().isEmpty()) {
-                predicates.add(root.get("linha").in(filtros.getLinhas()));
+            // Filtros de soma
+            if (filtros.getSomaMinima() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("soma"), filtros.getSomaMinima()));
             }
-            if (filtros.getColunas() != null && !filtros.getColunas().isEmpty()) {
-                predicates.add(root.get("coluna").in(filtros.getColunas()));
+            if (filtros.getSomaMaxima() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("soma"), filtros.getSomaMaxima()));
             }
 
-            // Filtro para excluir sorteados anteriormente
-            if (filtros.getNaoIncluirSorteadosAnteriormente() != null && filtros.getNaoIncluirSorteadosAnteriormente()) {
-                // Assumindo que 0 significa não sorteado
-                predicates.add(criteriaBuilder.equal(root.get("sorteado"), 0));
+            // Filtros de pares
+            if (filtros.getParesMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("pares"), filtros.getParesMinimo()));
+            }
+            if (filtros.getParesMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("pares"), filtros.getParesMaximo()));
+            }
+
+            // Filtros de ímpares
+            if (filtros.getImparesMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("impares"), filtros.getImparesMinimo()));
+            }
+            if (filtros.getImparesMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("impares"), filtros.getImparesMaximo()));
+            }
+
+            // Filtros de sequências
+            if (filtros.getSeqDoisMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_dois"), filtros.getSeqDoisMinimo()));
+            }
+            if (filtros.getSeqDoisMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_dois"), filtros.getSeqDoisMaximo()));
+            }
+
+            if (filtros.getSeqTresMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_tres"), filtros.getSeqTresMinimo()));
+            }
+            if (filtros.getSeqTresMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_tres"), filtros.getSeqTresMaximo()));
+            }
+
+            if (filtros.getSeqQuatroMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_quatro"), filtros.getSeqQuatroMinimo()));
+            }
+            if (filtros.getSeqQuatroMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_quatro"), filtros.getSeqQuatroMaximo()));
+            }
+
+            if (filtros.getSeqCincoMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_cinco"), filtros.getSeqCincoMinimo()));
+            }
+            if (filtros.getSeqCincoMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_cinco"), filtros.getSeqCincoMaximo()));
+            }
+
+            if (filtros.getSeqSeisMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_seis"), filtros.getSeqSeisMinimo()));
+            }
+            if (filtros.getSeqSeisMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_seis"), filtros.getSeqSeisMaximo()));
+            }
+
+            if (filtros.getSeqSeteMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_sete"), filtros.getSeqSeteMinimo()));
+            }
+            if (filtros.getSeqSeteMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_sete"), filtros.getSeqSeteMaximo()));
+            }
+
+            if (filtros.getSeqOitoMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_oito"), filtros.getSeqOitoMinimo()));
+            }
+            if (filtros.getSeqOitoMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_oito"), filtros.getSeqOitoMaximo()));
+            }
+
+            // Filtros de pontos
+            if (filtros.getPontosMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("pontos"), filtros.getPontosMinimo()));
+            }
+            if (filtros.getPontosMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("pontos"), filtros.getPontosMaximo()));
+            }
+
+            // Filtros de linha
+            if (filtros.getLinhaMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("linha"), filtros.getLinhaMinimo()));
+            }
+            if (filtros.getLinhaMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("linha"), filtros.getLinhaMaximo()));
+            }
+
+            // Filtros de coluna
+            if (filtros.getColunaMinimo() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("coluna"), filtros.getColunaMinimo()));
+            }
+            if (filtros.getColunaMaximo() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("coluna"), filtros.getColunaMaximo()));
+            }
+
+            // Filtro de já foi sorteado
+            if (filtros.getJaFoiSorteado() != null) {
+                if (filtros.getJaFoiSorteado()) {
+                    predicates.add(criteriaBuilder.equal(root.get("sorteado"), 1));
+                } else {
+                    predicates.add(criteriaBuilder.equal(root.get("sorteado"), 0));
+                }
+            }
+
+            // Filtros de números obrigatórios (implementação futura)
+            if (filtros.getNumerosObrigatorios() != null && !filtros.getNumerosObrigatorios().isEmpty()) {
+                // Implementar lógica para verificar se a sequência contém os números obrigatórios
+                // Isso requer uma análise da coluna 'sequencia' da tabela 'todos'
+                for (Integer numero : filtros.getNumerosObrigatorios()) {
+                    String numeroStr = String.format("%02d", numero);
+                    predicates.add(criteriaBuilder.like(root.get("sequencia"), "%" + numeroStr + "%"));
+                }
+            }
+
+            // Filtros de números proibidos (implementação futura)
+            if (filtros.getNumerosProibidos() != null && !filtros.getNumerosProibidos().isEmpty()) {
+                // Implementar lógica para verificar se a sequência NÃO contém os números proibidos
+                for (Integer numero : filtros.getNumerosProibidos()) {
+                    String numeroStr = String.format("%02d", numero);
+                    predicates.add(criteriaBuilder.notLike(root.get("sequencia"), "%" + numeroStr + "%"));
+                }
             }
 
             // Combina todos os predicados com AND
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
-
-    // Helper para adicionar predicados de range (min/max)
-    private void addRangePredicate(List<Predicate> predicates, javax.persistence.criteria.CriteriaBuilder cb, 
-                                   javax.persistence.criteria.Root<Todos> root, String fieldName, 
-                                   Integer min, Integer max) {
-        if (min != null) {
-            predicates.add(cb.greaterThanOrEqualTo(root.get(fieldName), min));
-        }
-        if (max != null) {
-            predicates.add(cb.lessThanOrEqualTo(root.get(fieldName), max));
-        }
-    }
 }
+

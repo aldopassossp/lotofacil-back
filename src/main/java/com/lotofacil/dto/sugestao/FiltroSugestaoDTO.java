@@ -12,45 +12,51 @@ import java.util.List;
 @AllArgsConstructor
 public class FiltroSugestaoDTO {
 
-    // Faixas numéricas (min/max)
-    private Integer pontosMin;
-    private Integer pontosMax;
+    // Filtros de soma
+    private Integer somaMinima;
+    private Integer somaMaxima;
 
-    private Integer somaMin;
-    private Integer somaMax;
+    // Filtros de pares/ímpares
+    private Integer paresMinimo;
+    private Integer paresMaximo;
+    private Integer imparesMinimo;
+    private Integer imparesMaximo;
 
-    private Integer imparesMin;
-    private Integer imparesMax;
+    // Filtros de sequências
+    private Integer seqDoisMinimo;
+    private Integer seqDoisMaximo;
+    private Integer seqTresMinimo;
+    private Integer seqTresMaximo;
+    private Integer seqQuatroMinimo;
+    private Integer seqQuatroMaximo;
+    private Integer seqCincoMinimo;
+    private Integer seqCincoMaximo;
+    private Integer seqSeisMinimo;
+    private Integer seqSeisMaximo;
+    private Integer seqSeteMinimo;
+    private Integer seqSeteMaximo;
+    private Integer seqOitoMinimo;
+    private Integer seqOitoMaximo;
 
-    private Integer seqDoisMin;
-    private Integer seqDoisMax;
+    // Filtros de pontos
+    private Integer pontosMinimo;
+    private Integer pontosMaximo;
 
-    private Integer seqTresMin;
-    private Integer seqTresMax;
+    // Filtros de linha/coluna
+    private Integer linhaMinimo;
+    private Integer linhaMaximo;
+    private Integer colunaMinimo;
+    private Integer colunaMaximo;
 
-    private Integer seqQuatroMin;
-    private Integer seqQuatroMax;
-    
-    private Integer seqCincoMin;
-    private Integer seqCincoMax;
-    
-    private Integer seqSeisMin;
-    private Integer seqSeisMax;
-    
-    private Integer seqSeteMin;
-    private Integer seqSeteMax;
-    
-    private Integer seqOitoMin;
-    private Integer seqOitoMax;
+    // Filtro de já foi sorteado
+    private Boolean jaFoiSorteado;
 
-    // Listas de valores exatos
-    private List<String> linhas; // Lista de padrões de linha (ex: "55500")
-    private List<String> colunas; // Lista de padrões de coluna (ex: "33333")
+    // Filtros de números específicos
+    private List<Integer> numerosObrigatorios;
+    private List<Integer> numerosProibidos;
 
-    // Outros filtros possíveis
-    private Boolean naoIncluirSorteadosAnteriormente; // Flag para excluir combinações já sorteadas (todos.sorteado = 0)
-
-    // Paginação e Limite
-    private int page = 0; // Número da página (default 0)
-    private int size = 20; // Tamanho da página (default 20)
+    // Paginação
+    private int page = 0;
+    private int size = 50;
 }
+
