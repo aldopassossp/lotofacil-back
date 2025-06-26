@@ -30,11 +30,12 @@ public class ResultadoImporterService {
     @Autowired
     private ResultadoUpdateService resultadoUpdateService; // Injetar o novo serviço
 
-    @Transactional
+  //  @Transactional
     public Map<String, Object> importarResultados(MultipartFile file) {
         log.info("Iniciando importação do arquivo: {}", file.getOriginalFilename());
         int adicionados = 0;
         int ignorados = 0;
+        List<Integer> ultimaListaNumerosImportados = null;
 
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is)) {
@@ -53,19 +54,20 @@ public class ResultadoImporterService {
                     Integer concurso = getIntValue(currentRow.getCell(0));
                     String dataSorteioStr = getStringValue(currentRow.getCell(1));
                     List<Integer> numeros = new ArrayList<>();
-                    for (int i = 2; i < 17; i++) { // Colunas 3 a 17 (índice 2 a 16)
-                        numeros.add(getIntValue(currentRow.getCell(i)));
+
+                    // Verificar se o concurso já existe
+                    if (sorteadosRepository.existsByIdSorteados(Long.valueOf(concurso))) {
+                        log.debug("Concurso {} já existe, ignorando.", concurso);
+                        ignorados++;
+                        continue;
+                    } else {
+                        for (int i = 2; i < 17; i++) { // Colunas 3 a 17 (índice 2 a 16)
+                            numeros.add(getIntValue(currentRow.getCell(i)));
+                        }
                     }
 
                     if (concurso == null || dataSorteioStr == null || numeros.contains(null) || numeros.size() != 15) {
                         log.warn("Linha inválida ou incompleta ignorada: Concurso={}, Data={}, Números={}", concurso, dataSorteioStr, numeros);
-                        ignorados++;
-                        continue;
-                    }
-
-                    // Verificar se o concurso já existe
-                    if (sorteadosRepository.existsByIdSorteados(concurso)) {
-                        log.debug("Concurso {} já existe, ignorando.", concurso);
                         ignorados++;
                         continue;
                     }
@@ -106,10 +108,11 @@ public class ResultadoImporterService {
 
                     sorteadosRepository.save(novoSorteado);
                     adicionados++;
+                    ultimaListaNumerosImportados = numeros;
                     log.debug("Concurso {} importado com sucesso.", concurso);
 
                 } catch (Exception e) {
-                    log.error("Erro ao processar linha {}: {}", currentRow.getRowNum() + 1, e.getMessage(), e);
+                    log.error("Erro ao processar linha {}: {}", currentRow.getRowNum() + 1, " -$$$$$- ", " ###### ");
                     ignorados++;
                 }
             }
@@ -123,6 +126,12 @@ public class ResultadoImporterService {
         Map<String, Object> resultado = new HashMap<>();
         resultado.put("adicionados", adicionados);
         resultado.put("ignorados", ignorados);
+
+        if (adicionados > 0) {
+            log.info("Iniciando atualização final de pontos após a importação.");
+            resultadoUpdateService.atualizarPontosAsync(ultimaListaNumerosImportados);
+        }
+
         return resultado;
     }
 

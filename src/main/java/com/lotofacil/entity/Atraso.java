@@ -13,21 +13,18 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "atraso", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"numero"})
-})
+@Table(name = "atraso")
 public class Atraso {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_atraso")
     private Long idAtraso;
 
-    @NotNull
-    @Min(1)
-    @Max(25)
-    @Column(nullable = false, unique = true)
-    private Integer numero; // Número da loteria (1 a 25)
+//    @NotNull
+//    @Min(1)
+//    @Max(25)
+//    @Column(nullable = false, unique = true)
+//    private Integer numero; // Número da loteria (1 a 25)
 
     @NotNull
     @Column(nullable = false)

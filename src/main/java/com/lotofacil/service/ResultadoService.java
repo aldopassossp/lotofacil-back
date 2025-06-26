@@ -35,7 +35,7 @@ public class ResultadoService {
         validarResultadoManualDTO(dto);
 
         // Verifica se o concurso já existe
-        if (sorteadosRepository.existsByIdSorteados(dto.getId_sorteados())) {
+        if (sorteadosRepository.existsByIdSorteados(Long.valueOf(dto.getId_sorteados()))) {
             throw new ValidationException("Concurso " + dto.getId_sorteados() + " já existe na base de dados.");
         }
 

@@ -14,7 +14,6 @@ import javax.persistence.*;
 public class Sorteados {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_sorteados")
     private Long idSorteados;
 

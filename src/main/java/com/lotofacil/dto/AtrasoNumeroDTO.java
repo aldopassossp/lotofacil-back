@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AtrasoNumeroDTO {
-    private Integer numero;
+//    private Integer numero;
     private Integer concursosAtraso;
     private String ultimoSorteio;
 }

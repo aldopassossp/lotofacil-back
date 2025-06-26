@@ -15,7 +15,8 @@ import java.util.List;
 public interface SorteadosRepository extends JpaRepository<Sorteados, Long> {
 
     // Verifica se existe sorteio por ID
-    boolean existsByIdSorteados(Integer idSorteados);
+    boolean existsByIdSorteados(Long idSorteados);
+
 
     // 🔸 Consulta a soma dos últimos N resultados (JOIN com Todos)
     @Query("SELECT new com.lotofacil.dto.dashboard.ConcursoSomaDTO(s.idSorteados, s.sorteio, t.soma) " +

@@ -93,7 +93,7 @@ public class EstatisticaService {
                 .mapToObj(numero -> {
                     int ultimoSorteio = ultimoSorteioMap.get(numero);
                     int atraso = ultimoSorteio == -1 ? ultimoConcurso : ultimoConcurso - ultimoSorteio;
-                    return new AtrasoNumeroDTO(numero, atraso, dataSorteioMap.get(numero));
+                    return new AtrasoNumeroDTO(atraso, dataSorteioMap.get(numero));
                 })
                 .sorted(Comparator.comparing(AtrasoNumeroDTO::getConcursosAtraso).reversed())
                 .collect(Collectors.toList());

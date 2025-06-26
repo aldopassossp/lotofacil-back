@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface AtrasoRepository extends JpaRepository<Atraso, Long> {
     
-    Optional<Atraso> findByNumero(Integer numero);
+    Optional<Atraso> findByIdAtraso(Integer numero);
     
-    List<Atraso> findByNumeroIn(List<Integer> numeros);
+    List<Atraso> findByIdAtrasoIn(List<Integer> numeros);
 }

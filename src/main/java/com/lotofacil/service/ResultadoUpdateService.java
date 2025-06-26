@@ -39,7 +39,7 @@ public class ResultadoUpdateService {
      * @param dataSorteio Data do sorteio.
      * @return O objeto Todos correspondente à combinação sorteada, ou null se não encontrado.
      */
-    @Transactional
+//    @Transactional
     public Todos atualizarDadosAposNovoResultado(List<Integer> numerosSorteados, String dataSorteio) {
         log.info("Atualizando dados síncronos para o sorteio de {} com números: {}", dataSorteio, numerosSorteados);
 
@@ -49,12 +49,12 @@ public class ResultadoUpdateService {
         // 2. Atualizar Tabela Todos (campo 'sorteado') (Síncrono)
         Todos todosCorrespondente = atualizarCampoTodosSorteado(numerosSorteados);
 
-        // 3. Disparar atualização assíncrona da coluna 'pontos' na tabela 'todos'
-        if (todosCorrespondente != null) {
-            atualizarPontosAsync(numerosSorteados);
-        } else {
-             log.error("Não foi possível encontrar a combinação correspondente em 'todos' para o sorteio {}. A atualização de pontos não será disparada.", dataSorteio);
-        }
+//        // 3. Disparar atualização assíncrona da coluna 'pontos' na tabela 'todos'
+//        if (todosCorrespondente != null) {
+//            atualizarPontosAsync(numerosSorteados);
+//        } else {
+//             log.error("Não foi possível encontrar a combinação correspondente em 'todos' para o sorteio {}. A atualização de pontos não será disparada.", dataSorteio);
+//        }
 
         return todosCorrespondente;
     }
@@ -67,16 +67,16 @@ public class ResultadoUpdateService {
             log.warn("Tabela 'atraso' incompleta ou vazia. Inicializando...");
             for (int numero = 1; numero <= 25; numero++) {
                 final int num = numero;
-                if (atrasosParaAtualizar.stream().noneMatch(a -> a.getNumero().equals(num))) {
+                if (atrasosParaAtualizar.stream().noneMatch(a -> a.getIdAtraso().equals(num))) {
                     Atraso novoAtraso = new Atraso();
-                    novoAtraso.setNumero(num);
+//                    novoAtraso.setNumero(num);
                     novoAtraso.setContagem(0);
                     atrasosParaAtualizar.add(novoAtraso);
                 }
             }
         }
         for (Atraso atraso : atrasosParaAtualizar) {
-            int numeroAtual = atraso.getNumero();
+            int numeroAtual = Math.toIntExact(atraso.getIdAtraso());
             if (numerosSorteados.contains(numeroAtual)) {
                 atraso.setContagem(0);
                 atraso.setUltimo(dataSorteio);
@@ -95,7 +95,6 @@ public class ResultadoUpdateService {
         log.debug("Buscando combinação na tabela 'todos' com sequência: {}", sequenciaFormatada);
 
         Optional<Todos> todosOptional = todosRepository.findBySequencia(sequenciaFormatada);
-
         if (todosOptional.isPresent()) {
             Todos todos = todosOptional.get();
             todos.setSorteado(1); // Marca como sorteado
