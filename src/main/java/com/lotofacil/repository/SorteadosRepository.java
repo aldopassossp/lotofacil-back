@@ -35,49 +35,74 @@ public interface SorteadosRepository extends JpaRepository<Sorteados, Long> {
     List<Sorteados> findAllByOrderByIdSorteadosDesc();
 
     // 🔥 Contagem de seq_dois usando nativeQuery
-    @Query(value = "SELECT t.seq_dois AS valor, COUNT(s.id_sorteados) AS contagem " +
-            "FROM sorteados s " +
-            "JOIN todos t ON t.id_todos = s.id_todos " +
-            "GROUP BY t.seq_dois " +
-            "ORDER BY contagem DESC",
+    @Query(value = "SELECT seq_dois, COUNT(*) AS quantidade " +
+            "FROM ( " +
+            "   SELECT t.seq_dois " +
+            "   FROM todos t " +
+            "   WHERE t.sorteado > 0 " +
+            "   ORDER BY t.id_todos DESC " +
+            "   LIMIT ?1 " +
+            ") AS ultimos " +
+            "GROUP BY seq_dois " +
+            "ORDER BY quantidade DESC",
             nativeQuery = true)
-    List<Object[]> findContagemSeqDoisUltimosN(Pageable pageable);
+    List<Object[]> findContagemSeqDoisUltimosN(int n);
 
     // 🔥 Contagem de seq_tres usando nativeQuery
-    @Query(value = "SELECT t.seq_tres AS valor, COUNT(s.id_sorteados) AS contagem " +
-            "FROM sorteados s " +
-            "JOIN todos t ON t.id_todos = s.id_todos " +
-            "GROUP BY t.seq_tres " +
-            "ORDER BY contagem DESC",
+    @Query(value = "SELECT seq_tres, COUNT(*) AS quantidade " +
+            "FROM ( " +
+            "   SELECT t.seq_tres " +
+            "   FROM todos t " +
+            "   WHERE t.sorteado > 0 " +
+            "   ORDER BY t.id_todos DESC " +
+            "   LIMIT ?1 " +
+            ") AS ultimos " +
+            "GROUP BY seq_tres " +
+            "ORDER BY quantidade DESC",
             nativeQuery = true)
-    List<Object[]> findContagemSeqTresUltimosN(Pageable pageable);
+    List<Object[]> findContagemSeqTresUltimosN(int n);
 
     // 🔥 Contagem de seq_quatro usando nativeQuery
-    @Query(value = "SELECT t.seq_quatro AS valor, COUNT(s.id_sorteados) AS contagem " +
-            "FROM sorteados s " +
-            "JOIN todos t ON t.id_todos = s.id_todos " +
-            "GROUP BY t.seq_quatro " +
-            "ORDER BY contagem DESC",
+    @Query(value = "SELECT seq_quatro, COUNT(*) AS quantidade " +
+            "FROM ( " +
+            "   SELECT t.seq_quatro " +
+            "   FROM todos t " +
+            "   WHERE t.sorteado > 0 " +
+            "   ORDER BY t.id_todos DESC " +
+            "   LIMIT ?1 " +
+            ") AS ultimos " +
+            "GROUP BY seq_quatro " +
+            "ORDER BY quantidade DESC",
             nativeQuery = true)
-    List<Object[]> findContagemSeqQuatroUltimosN(Pageable pageable);
+    List<Object[]> findContagemSeqQuatroUltimosN(int n);
 
     // 🔥 Ocorrência por linha usando nativeQuery
     @Query(value = "SELECT t.linha AS valor, COUNT(s.id_sorteados) AS contagem " +
-            "FROM sorteados s " +
+            "FROM ( " +
+            "   SELECT s.* " +
+            "   FROM sorteados s " +
+            "   ORDER BY s.id_sorteados DESC " +
+            "   LIMIT ?1 " +
+            ") s " +
             "JOIN todos t ON t.id_todos = s.id_todos " +
             "GROUP BY t.linha " +
             "ORDER BY contagem DESC",
             nativeQuery = true)
-    List<Object[]> findOcorrenciaLinhaUltimosN(Pageable pageable);
+    List<Object[]> findOcorrenciaLinhaUltimosN(int n);
 
     // 🔥 Ocorrência por coluna usando nativeQuery
     @Query(value = "SELECT t.coluna AS valor, COUNT(s.id_sorteados) AS contagem " +
-            "FROM sorteados s " +
+            "FROM ( " +
+            "   SELECT s.* " +
+            "   FROM sorteados s " +
+            "   ORDER BY s.id_sorteados DESC " +
+            "   LIMIT ?1 " +
+            ") s " +
             "JOIN todos t ON t.id_todos = s.id_todos " +
             "GROUP BY t.coluna " +
             "ORDER BY contagem DESC",
             nativeQuery = true)
-    List<Object[]> findOcorrenciaColunaUltimosN(Pageable pageable);
+    List<Object[]> findOcorrenciaColunaUltimosN(int n);
 
     @Query(value = "SELECT dezena, COUNT(*) as contagem FROM ( " +
             "SELECT bola1 AS dezena FROM (SELECT * FROM sorteados ORDER BY id_sorteados DESC LIMIT :n) s UNION ALL " +

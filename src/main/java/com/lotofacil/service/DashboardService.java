@@ -60,40 +60,62 @@ public class DashboardService {
     }
 
     // Método para calcular a contagem de sequências (seq_dois, seq_tres, etc.) nos últimos N
-    public List<ValorContagemDTO> getContagemSequenciaUltimosN(String tipoSequencia, int n) {
-        log.debug("Calculando contagem de {} nos últimos {} resultados.", tipoSequencia, n);
+    public List<ValorContagemDTO> getContagemSequenciaDoisUltimosN(int n) {
+        log.debug("Calculando contagem de sequencia de dois nos últimos {} resultados.", n);
         Pageable pageable = PageRequest.of(0, n);
         // Query dinâmica ou separada por tipo de sequência, com JOIN e agregação
-        List<Object[]> resultados = sorteadosRepository.findContagemSeqQuatroUltimosN(pageable);
+        List<Object[]> resultados = sorteadosRepository.findContagemSeqDoisUltimosN(n);
         return resultados.stream()
                 .map(r -> new ValorContagemDTO(String.valueOf(r[0]), ((Number) r[1]).longValue()))
                 .collect(Collectors.toList());
     }
 
-    // Método para calcular as ocorrências de linha/coluna nos últimos N
-    public List<ValorContagemDTO> getOcorrenciaLinhaColunaUltimosN(String tipo, int n) {
-        log.debug("Calculando ocorrências de {} nos últimos {} resultados.", tipo, n);
+    // Método para calcular a contagem de sequências (seq_dois, seq_tres, etc.) nos últimos N
+    public List<ValorContagemDTO> getContagemSequenciaTresUltimosN(int n) {
+        log.debug("Calculando contagem de sequencia de três nos últimos {} resultados.", n);
         Pageable pageable = PageRequest.of(0, n);
-        // Query dinâmica ou separada por tipo (linha/coluna), com JOIN e agregação
-        List<Object[]> resultados = sorteadosRepository.findContagemSeqQuatroUltimosN(pageable);
+        // Query dinâmica ou separada por tipo de sequência, com JOIN e agregação
+        List<Object[]> resultados = sorteadosRepository.findContagemSeqTresUltimosN(n);
         return resultados.stream()
                 .map(r -> new ValorContagemDTO(String.valueOf(r[0]), ((Number) r[1]).longValue()))
                 .collect(Collectors.toList());
     }
+
+    // Método para calcular a contagem de sequências (seq_dois, seq_tres, etc.) nos últimos N
+    public List<ValorContagemDTO> getContagemSequenciaQuatroUltimosN(int n) {
+        log.debug("Calculando contagem de sequencia de quatro nos últimos {} resultados.", n);
+        Pageable pageable = PageRequest.of(0, n);
+        // Query dinâmica ou separada por tipo de sequência, com JOIN e agregação
+        List<Object[]> resultados = sorteadosRepository.findContagemSeqQuatroUltimosN(n);
+        return resultados.stream()
+                .map(r -> new ValorContagemDTO(String.valueOf(r[0]), ((Number) r[1]).longValue()))
+                .collect(Collectors.toList());
+    }
+
+//    // Método para calcular as ocorrências de linha/coluna nos últimos N
+//    public List<ValorContagemDTO> getOcorrenciaLinhaColunaUltimosN(String tipo, int n) {
+//        log.debug("Calculando ocorrências de {} nos últimos {} resultados.", tipo, n);
+//        Pageable pageable = PageRequest.of(0, n);
+//        // Query dinâmica ou separada por tipo (linha/coluna), com JOIN e agregação
+//        List<Object[]> resultados = sorteadosRepository.findContagemSeqQuatroUltimosN(pageable);
+//        return resultados.stream()
+//                .map(r -> new ValorContagemDTO(String.valueOf(r[0]), ((Number) r[1]).longValue()))
+//                .collect(Collectors.toList());
+//    }
 
     // Nota: Os métodos no SorteadosRepository (findUltimosNComSoma, findUltimosNComImpares, etc.)
     // precisam ser implementados com as queries JPQL ou nativas apropriadas,
     // incluindo os JOINs necessários com a entidade Todos.
 
     public List<ContagemLinhaDTO> ocorrenciaColunaUltimosN(int n) {
-        var dados = sorteadosRepository.findOcorrenciaColunaUltimosN(PageRequest.of(0, n));
+        var dados = sorteadosRepository.findOcorrenciaColunaUltimosN(n);
         return dados.stream()
                 .map(o -> new ContagemLinhaDTO(o[0].toString(), ((Number) o[1]).longValue()))
                 .collect(Collectors.toList());
     }
 
     public List<ContagemLinhaDTO> ocorrenciaLinhaUltimosN(int n) {
-        var dados = sorteadosRepository.findOcorrenciaLinhaUltimosN(PageRequest.of(0, n));
+        var dados = sorteadosRepository.findOcorrenciaLinhaUltimosN(n);
         return dados.stream()
                 .map(o -> new ContagemLinhaDTO(o[0].toString(), ((Number) o[1]).longValue()))
                 .collect(Collectors.toList());

@@ -56,23 +56,55 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getFrequenciaNumerosUltimosN(limit));
     }
 
-    @GetMapping("/contagem-sequencia/{tipoSequencia}")
+    @GetMapping("/contagem-sequencia-dois/{n}")
     @Operation(summary = "Obtém a contagem de ocorrências de um tipo de sequência (seq_dois, seq_tres, etc.) nos últimos N resultados")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Sucesso"),
         @ApiResponse(responseCode = "400", description = "Tipo de sequência inválido")
     })
-    public ResponseEntity<List<ValorContagemDTO>> getContagemSequenciaUltimosN(
+    public ResponseEntity<List<ValorContagemDTO>> getContagemSequenciaDoisUltimosN(
             @Parameter(description = "Tipo da sequência (ex: seq_dois, seq_tres, seq_quatro)", required = true, example = "seq_dois")
-            @PathVariable String tipoSequencia,
-            @Parameter(description = "Número de últimos resultados a considerar", example = "50")
-            @RequestParam(required = false) Integer n) {
+            @PathVariable Integer n){
         // Basic validation for tipoSequencia
-        if (!List.of("seq_dois", "seq_tres", "seq_quatro", "seq_cinco", "seq_seis", "seq_sete", "seq_oito").contains(tipoSequencia)) {
-            return ResponseEntity.badRequest().build();
-        }
+//        if (!List.of("seq_dois", "seq_tres", "seq_quatro", "seq_cinco", "seq_seis", "seq_sete", "seq_oito").contains(tipoSequencia)) {
+//            return ResponseEntity.badRequest().build();
+//        }
         int limit = (n != null && n > 0) ? n : 50;
-        return ResponseEntity.ok(dashboardService.getContagemSequenciaUltimosN(tipoSequencia, limit));
+        return ResponseEntity.ok(dashboardService.getContagemSequenciaDoisUltimosN(limit));
+    }
+
+    @GetMapping("/contagem-sequencia-tres/{n}")
+    @Operation(summary = "Obtém a contagem de ocorrências de um tipo de sequência (seq_dois, seq_tres, etc.) nos últimos N resultados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(responseCode = "400", description = "Tipo de sequência inválido")
+    })
+    public ResponseEntity<List<ValorContagemDTO>> getContagemSequenciaTresUltimosN(
+            @Parameter(description = "Tipo da sequência (ex: seq_dois, seq_tres, seq_quatro)", required = true, example = "seq_dois")
+            @PathVariable Integer n) {
+        // Basic validation for tipoSequencia
+//        if (!List.of("seq_dois", "seq_tres", "seq_quatro", "seq_cinco", "seq_seis", "seq_sete", "seq_oito").contains(tipoSequencia)) {
+//            return ResponseEntity.badRequest().build();
+//        }
+        int limit = (n != null && n > 0) ? n : 50;
+        return ResponseEntity.ok(dashboardService.getContagemSequenciaTresUltimosN(limit));
+    }
+
+    @GetMapping("/contagem-sequencia-quatro/{n}")
+    @Operation(summary = "Obtém a contagem de ocorrências de um tipo de sequência (seq_dois, seq_tres, etc.) nos últimos N resultados")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(responseCode = "400", description = "Tipo de sequência inválido")
+    })
+    public ResponseEntity<List<ValorContagemDTO>> getContagemSequenciaQuatroUltimosN(
+            @Parameter(description = "Tipo da sequência (ex: seq_dois, seq_tres, seq_quatro)", required = true, example = "seq_dois")
+            @PathVariable Integer n) {
+        // Basic validation for tipoSequencia
+//        if (!List.of("seq_dois", "seq_tres", "seq_quatro", "seq_cinco", "seq_seis", "seq_sete", "seq_oito").contains(tipoSequencia)) {
+//            return ResponseEntity.badRequest().build();
+//        }
+        int limit = (n != null && n > 0) ? n : 50;
+        return ResponseEntity.ok(dashboardService.getContagemSequenciaQuatroUltimosN(limit));
     }
 
 //    @GetMapping("/ocorrencia-linha-coluna/{tipo}")
