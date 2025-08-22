@@ -7,9 +7,7 @@ import com.lotofacil.repository.TodosRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 public class ResultadoUpdateService {
@@ -25,11 +22,17 @@ public class ResultadoUpdateService {
     private static final Logger log = LoggerFactory.getLogger(ResultadoUpdateService.class);
     private static final int BATCH_SIZE = 10000; // Process records in batches for performance
 
+    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
     private AtrasoRepository atrasoRepository;
 
     @Autowired
     private TodosRepository todosRepository;
+
+    public ResultadoUpdateService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     /**
      * Atualiza as tabelas 'atraso' e 'todos' (campo 'sorteado') de forma síncrona
@@ -114,8 +117,8 @@ public class ResultadoUpdateService {
      *
      * @param numerosSorteados Lista dos 15 números do último sorteio.
      */
-    @Async
-    @Transactional(propagation = Propagation.REQUIRES_NEW) // Executa em nova transação
+//    @Async
+//    @Transactional(propagation = Propagation.REQUIRES_NEW) // Executa em nova transação
     public void atualizarPontosAsync(List<Integer> numerosSorteados) {
         log.info("Iniciando atualização assíncrona da coluna 'pontos' na tabela 'todos' para os números: {}", numerosSorteados);
         long startTime = System.currentTimeMillis();
@@ -124,34 +127,41 @@ public class ResultadoUpdateService {
         int pageNumber = 0;
 
         try {
-            Page<Todos> paginaTodos;
-            do {
-                Pageable pageable = PageRequest.of(pageNumber, BATCH_SIZE);
-                paginaTodos = todosRepository.findAll(pageable);
-                List<Todos> batchParaSalvar = new ArrayList<>();
+//            Page<Todos> paginaTodos;
+//            do {
+//                Pageable pageable = PageRequest.of(pageNumber, BATCH_SIZE);
+//                paginaTodos = todosRepository.findAll(pageable);
+//                List<Todos> batchParaSalvar = new ArrayList<>();
+//
+//                log.debug("Processando página {} ({} registros) para atualização de pontos...", pageNumber, paginaTodos.getNumberOfElements());
+//
+//                for (Todos todos : paginaTodos.getContent()) {
+//                    List<Integer> numerosCombinacao = parseSequencia(todos.getSequencia());
+//                    int pontos = calcularPontos(numerosSorteadosSet, numerosCombinacao);
+//                    if (todos.getPontos() == null || todos.getPontos() != pontos) {
+//                         todos.setPontos(pontos);
+//                         batchParaSalvar.add(todos);
+//                    }
+//                }
+//
+//                if (!batchParaSalvar.isEmpty()) {
+//                    todosRepository.saveAll(batchParaSalvar); // Salva o lote atualizado
+//                    totalAtualizado += batchParaSalvar.size();
+//                    log.debug("Lote de {} registros atualizado.", batchParaSalvar.size());
+//                }
+//
+//                pageNumber++;
+//            } while (paginaTodos.hasNext());
+            todosRepository.zeraPontos();
 
-                log.debug("Processando página {} ({} registros) para atualização de pontos...", pageNumber, paginaTodos.getNumberOfElements());
-
-                for (Todos todos : paginaTodos.getContent()) {
-                    List<Integer> numerosCombinacao = parseSequencia(todos.getSequencia());
-                    int pontos = calcularPontos(numerosSorteadosSet, numerosCombinacao);
-                    if (todos.getPontos() == null || todos.getPontos() != pontos) {
-                         todos.setPontos(pontos);
-                         batchParaSalvar.add(todos);
-                    }
-                }
-                
-                if (!batchParaSalvar.isEmpty()) {
-                    todosRepository.saveAll(batchParaSalvar); // Salva o lote atualizado
-                    totalAtualizado += batchParaSalvar.size();
-                    log.debug("Lote de {} registros atualizado.", batchParaSalvar.size());
-                }
-
-                pageNumber++;
-            } while (paginaTodos.hasNext());
+            for (Integer numero : numerosSorteados) {
+                String numeroFormatado = String.format("%02d", numero);
+                todosRepository.atualizaPontos(numeroFormatado);
+                log.info("Atualizando o número: {}", numeroFormatado);
+            }
 
             long endTime = System.currentTimeMillis();
-            log.info("Atualização assíncrona da coluna 'pontos' concluída. {} registros atualizados em {} ms.", totalAtualizado, (endTime - startTime));
+            log.info("Atualização da coluna 'pontos' concluída em {} ms.", (endTime - startTime));
 
         } catch (Exception e) {
             log.error("Erro durante a atualização assíncrona da coluna 'pontos': {}", e.getMessage(), e);
@@ -193,4 +203,5 @@ public class ResultadoUpdateService {
         }
         return pontos;
     }
+
 }

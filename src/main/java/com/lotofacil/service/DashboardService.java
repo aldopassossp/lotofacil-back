@@ -2,6 +2,7 @@ package com.lotofacil.service;
 
 import com.lotofacil.dto.dashboard.ConcursoParesDTO;
 import com.lotofacil.dto.dashboard.ConcursoSomaDTO;
+import com.lotofacil.dto.dashboard.ContagemLinhaDTO;
 import com.lotofacil.dto.dashboard.ValorContagemDTO;
 import com.lotofacil.entity.Sorteados;
 import com.lotofacil.repository.SorteadosRepository;
@@ -83,6 +84,20 @@ public class DashboardService {
     // Nota: Os métodos no SorteadosRepository (findUltimosNComSoma, findUltimosNComImpares, etc.)
     // precisam ser implementados com as queries JPQL ou nativas apropriadas,
     // incluindo os JOINs necessários com a entidade Todos.
+
+    public List<ContagemLinhaDTO> ocorrenciaColunaUltimosN(int n) {
+        var dados = sorteadosRepository.findOcorrenciaColunaUltimosN(PageRequest.of(0, n));
+        return dados.stream()
+                .map(o -> new ContagemLinhaDTO(o[0].toString(), ((Number) o[1]).longValue()))
+                .collect(Collectors.toList());
+    }
+
+    public List<ContagemLinhaDTO> ocorrenciaLinhaUltimosN(int n) {
+        var dados = sorteadosRepository.findOcorrenciaLinhaUltimosN(PageRequest.of(0, n));
+        return dados.stream()
+                .map(o -> new ContagemLinhaDTO(o[0].toString(), ((Number) o[1]).longValue()))
+                .collect(Collectors.toList());
+    }
 }
 
 

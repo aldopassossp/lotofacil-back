@@ -2,6 +2,7 @@ package com.lotofacil.controller;
 
 import com.lotofacil.dto.dashboard.ConcursoParesDTO;
 import com.lotofacil.dto.dashboard.ConcursoSomaDTO;
+import com.lotofacil.dto.dashboard.ContagemLinhaDTO;
 import com.lotofacil.dto.dashboard.ValorContagemDTO;
 import com.lotofacil.service.DashboardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,7 +52,7 @@ public class DashboardController {
     public ResponseEntity<List<ValorContagemDTO>> getFrequenciaNumerosUltimosN(
             @Parameter(description = "Número de últimos resultados a considerar", example = "100")
             @RequestParam(required = false) Integer n) {
-        int limit = (n != null && n > 0) ? n : 100; // Default larger for frequency
+        int limit = (n != null && n > 0) ? n : 10; // Default larger for frequency
         return ResponseEntity.ok(dashboardService.getFrequenciaNumerosUltimosN(limit));
     }
 
@@ -74,21 +75,33 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getContagemSequenciaUltimosN(tipoSequencia, limit));
     }
 
-    @GetMapping("/ocorrencia-linha-coluna/{tipo}")
-    @Operation(summary = "Obtém a contagem de ocorrências de linha ou coluna nos últimos N resultados")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Sucesso"),
-        @ApiResponse(responseCode = "400", description = "Tipo inválido (deve ser 'linha' ou 'coluna')")
-    })
-    public ResponseEntity<List<ValorContagemDTO>> getOcorrenciaLinhaColunaUltimosN(
-            @Parameter(description = "Tipo da análise ('linha' ou 'coluna')", required = true, example = "linha")
-            @PathVariable String tipo,
-            @Parameter(description = "Número de últimos resultados a considerar", example = "50")
-            @RequestParam(required = false) Integer n) {
-        if (!List.of("linha", "coluna").contains(tipo)) {
-            return ResponseEntity.badRequest().build();
-        }
-        int limit = (n != null && n > 0) ? n : 50;
-        return ResponseEntity.ok(dashboardService.getOcorrenciaLinhaColunaUltimosN(tipo, limit));
+//    @GetMapping("/ocorrencia-linha-coluna/{tipo}")
+//    @Operation(summary = "Obtém a contagem de ocorrências de linha ou coluna nos últimos N resultados")
+//    @ApiResponses(value = {
+//        @ApiResponse(responseCode = "200", description = "Sucesso"),
+//        @ApiResponse(responseCode = "400", description = "Tipo inválido (deve ser 'linha' ou 'coluna')")
+//    })
+//    public ResponseEntity<List<ValorContagemDTO>> getOcorrenciaLinhaColunaUltimosN(
+//            @Parameter(description = "Tipo da análise ('linha' ou 'coluna')", required = true, example = "linha")
+//            @PathVariable String tipo,
+//            @Parameter(description = "Número de últimos resultados a considerar", example = "50")
+//            @RequestParam(required = false) Integer n) {
+//        if (!List.of("linha", "coluna").contains(tipo)) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//        int limit = (n != null && n > 0) ? n : 50;
+//        return ResponseEntity.ok(dashboardService.getOcorrenciaLinhaColunaUltimosN(tipo, limit));
+//    }
+
+    @GetMapping("/ocorrencias-linha/{n}")
+    public ResponseEntity<List<ContagemLinhaDTO>> getOcorrenciasLinha(@PathVariable Integer n) {
+        List<ContagemLinhaDTO> ocorrencias = dashboardService.ocorrenciaLinhaUltimosN(n);
+        return ResponseEntity.ok(ocorrencias);
+    }
+
+    @GetMapping("/ocorrencias-coluna/{n}")
+    public ResponseEntity<List<ContagemLinhaDTO>> getOcorrenciasColuna(@PathVariable Integer n) {
+        List<ContagemLinhaDTO> ocorrencias = dashboardService.ocorrenciaColunaUltimosN(n);
+        return ResponseEntity.ok(ocorrencias);
     }
 }
