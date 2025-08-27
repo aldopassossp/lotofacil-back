@@ -1,10 +1,12 @@
 package com.lotofacil.service;
 
+import com.lotofacil.dto.AtrasoNumeroDTO;
 import com.lotofacil.dto.dashboard.ConcursoParesDTO;
 import com.lotofacil.dto.dashboard.ConcursoSomaDTO;
 import com.lotofacil.dto.dashboard.ContagemLinhaDTO;
 import com.lotofacil.dto.dashboard.ValorContagemDTO;
 import com.lotofacil.entity.Sorteados;
+import com.lotofacil.repository.AtrasoRepository;
 import com.lotofacil.repository.SorteadosRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,9 @@ public class DashboardService {
 
     @Autowired
     private SorteadosRepository sorteadosRepository;
+
+    @Autowired
+    private AtrasoRepository atrasoRepository;
 
     // Método para buscar a soma dos últimos N resultados
     public List<ConcursoSomaDTO> getSomaUltimosNResultados(int n) {
@@ -118,6 +123,17 @@ public class DashboardService {
         var dados = sorteadosRepository.findOcorrenciaLinhaUltimosN(n);
         return dados.stream()
                 .map(o -> new ContagemLinhaDTO(o[0].toString(), ((Number) o[1]).longValue()))
+                .collect(Collectors.toList());
+    }
+
+    public List<AtrasoNumeroDTO> getAtrasos() {
+        var dados = atrasoRepository.findAtrasos();
+        return dados.stream()
+                .map(o -> new AtrasoNumeroDTO(
+                        ((Number) o[0]).intValue(),   // id_atraso
+                        ((Number) o[1]).intValue(),   // contagem
+                        o[2].toString()               // ultimo
+                ))
                 .collect(Collectors.toList());
     }
 }

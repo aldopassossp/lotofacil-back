@@ -1,5 +1,6 @@
 package com.lotofacil.controller;
 
+import com.lotofacil.dto.AtrasoNumeroDTO;
 import com.lotofacil.dto.dashboard.ConcursoParesDTO;
 import com.lotofacil.dto.dashboard.ConcursoSomaDTO;
 import com.lotofacil.dto.dashboard.ContagemLinhaDTO;
@@ -135,5 +136,10 @@ public class DashboardController {
     public ResponseEntity<List<ContagemLinhaDTO>> getOcorrenciasColuna(@PathVariable Integer n) {
         List<ContagemLinhaDTO> ocorrencias = dashboardService.ocorrenciaColunaUltimosN(n);
         return ResponseEntity.ok(ocorrencias);
+    }
+
+    @GetMapping("/atraso")
+    public ResponseEntity<List<AtrasoNumeroDTO>> listarAtrasos() {
+        return ResponseEntity.ok(dashboardService.getAtrasos());
     }
 }
