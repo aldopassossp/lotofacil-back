@@ -119,8 +119,22 @@ public class DashboardService {
                 .collect(Collectors.toList());
     }
 
+    public List<ContagemLinhaDTO> ocorrenciaTodasColunas() {
+        var dados = sorteadosRepository.findOcorrenciaTodasColunas();
+        return dados.stream()
+                .map(o -> new ContagemLinhaDTO(o[0].toString(), ((Number) o[1]).longValue()))
+                .collect(Collectors.toList());
+    }
+
     public List<ContagemLinhaDTO> ocorrenciaLinhaUltimosN(int n) {
         var dados = sorteadosRepository.findOcorrenciaLinhaUltimosN(n);
+        return dados.stream()
+                .map(o -> new ContagemLinhaDTO(o[0].toString(), ((Number) o[1]).longValue()))
+                .collect(Collectors.toList());
+    }
+
+    public List<ContagemLinhaDTO> ocorrenciaTodasLinhas() {
+        var dados = sorteadosRepository.findOcorrenciaTodasLinhas();
         return dados.stream()
                 .map(o -> new ContagemLinhaDTO(o[0].toString(), ((Number) o[1]).longValue()))
                 .collect(Collectors.toList());

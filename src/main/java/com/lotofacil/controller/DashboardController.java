@@ -132,9 +132,21 @@ public class DashboardController {
         return ResponseEntity.ok(ocorrencias);
     }
 
+    @GetMapping("/ocorrencias-linha/")
+    public ResponseEntity<List<ContagemLinhaDTO>> getOcorrenciasTodasLinhas() {
+        List<ContagemLinhaDTO> ocorrencias = dashboardService.ocorrenciaTodasLinhas();
+        return ResponseEntity.ok(ocorrencias);
+    }
+
     @GetMapping("/ocorrencias-coluna/{n}")
     public ResponseEntity<List<ContagemLinhaDTO>> getOcorrenciasColuna(@PathVariable Integer n) {
         List<ContagemLinhaDTO> ocorrencias = dashboardService.ocorrenciaColunaUltimosN(n);
+        return ResponseEntity.ok(ocorrencias);
+    }
+
+    @GetMapping("/ocorrencias-coluna/")
+    public ResponseEntity<List<ContagemLinhaDTO>> getOcorrenciasTodasColunas() {
+        List<ContagemLinhaDTO> ocorrencias = dashboardService.ocorrenciaTodasColunas();
         return ResponseEntity.ok(ocorrencias);
     }
 

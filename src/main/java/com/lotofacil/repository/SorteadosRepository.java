@@ -90,6 +90,13 @@ public interface SorteadosRepository extends JpaRepository<Sorteados, Long> {
             nativeQuery = true)
     List<Object[]> findOcorrenciaLinhaUltimosN(int n);
 
+    @Query(value = "SELECT t.linha AS valor, COUNT(t.id_todos) AS contagem " +
+            "FROM todos t " +
+            "GROUP BY t.linha " +
+            "ORDER BY t.linha ASC",
+            nativeQuery = true)
+    List<Object[]> findOcorrenciaTodasLinhas();
+
     // 🔥 Ocorrência por coluna usando nativeQuery
     @Query(value = "SELECT t.coluna AS valor, COUNT(s.id_sorteados) AS contagem " +
             "FROM ( " +
@@ -103,6 +110,13 @@ public interface SorteadosRepository extends JpaRepository<Sorteados, Long> {
             "ORDER BY contagem DESC",
             nativeQuery = true)
     List<Object[]> findOcorrenciaColunaUltimosN(int n);
+
+    @Query(value = "SELECT t.coluna AS valor, COUNT(t.id_todos) AS contagem " +
+            "FROM todos t " +
+            "GROUP BY t.coluna " +
+            "ORDER BY t.coluna ASC",
+            nativeQuery = true)
+    List<Object[]> findOcorrenciaTodasColunas();
 
     @Query(value = "SELECT dezena, COUNT(*) as contagem FROM ( " +
             "SELECT bola1 AS dezena FROM (SELECT * FROM sorteados ORDER BY id_sorteados DESC LIMIT :n) s UNION ALL " +
