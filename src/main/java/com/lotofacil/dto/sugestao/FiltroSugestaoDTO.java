@@ -19,34 +19,20 @@ public class FiltroSugestaoDTO {
     // Filtros de pares/ímpares
     private Integer paresMinimo;
     private Integer paresMaximo;
-    private Integer imparesMinimo;
-    private Integer imparesMaximo;
 
     // Filtros de sequências
     private Integer seqDoisMinimo;
     private Integer seqDoisMaximo;
     private Integer seqTresMinimo;
     private Integer seqTresMaximo;
-    private Integer seqQuatroMinimo;
-    private Integer seqQuatroMaximo;
-    private Integer seqCincoMinimo;
-    private Integer seqCincoMaximo;
-    private Integer seqSeisMinimo;
-    private Integer seqSeisMaximo;
-    private Integer seqSeteMinimo;
-    private Integer seqSeteMaximo;
-    private Integer seqOitoMinimo;
-    private Integer seqOitoMaximo;
 
     // Filtros de pontos
     private Integer pontosMinimo;
     private Integer pontosMaximo;
 
     // Filtros de linha/coluna
-    private Integer linhaMinimo;
-    private Integer linhaMaximo;
-    private Integer colunaMinimo;
-    private Integer colunaMaximo;
+    private List<String> linhasSelecionadas;
+    private List<String> colunasSelecionadas;
 
     // Filtro de já foi sorteado
     private Boolean jaFoiSorteado;

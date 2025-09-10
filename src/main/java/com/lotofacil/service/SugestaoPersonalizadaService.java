@@ -57,14 +57,6 @@ public class SugestaoPersonalizadaService {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("pares"), filtros.getParesMaximo()));
             }
 
-            // Filtros de ímpares
-            if (filtros.getImparesMinimo() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("impares"), filtros.getImparesMinimo()));
-            }
-            if (filtros.getImparesMaximo() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("impares"), filtros.getImparesMaximo()));
-            }
-
             // Filtros de sequências
             if (filtros.getSeqDoisMinimo() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_dois"), filtros.getSeqDoisMinimo()));
@@ -80,41 +72,6 @@ public class SugestaoPersonalizadaService {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_tres"), filtros.getSeqTresMaximo()));
             }
 
-            if (filtros.getSeqQuatroMinimo() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_quatro"), filtros.getSeqQuatroMinimo()));
-            }
-            if (filtros.getSeqQuatroMaximo() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_quatro"), filtros.getSeqQuatroMaximo()));
-            }
-
-            if (filtros.getSeqCincoMinimo() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_cinco"), filtros.getSeqCincoMinimo()));
-            }
-            if (filtros.getSeqCincoMaximo() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_cinco"), filtros.getSeqCincoMaximo()));
-            }
-
-            if (filtros.getSeqSeisMinimo() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_seis"), filtros.getSeqSeisMinimo()));
-            }
-            if (filtros.getSeqSeisMaximo() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_seis"), filtros.getSeqSeisMaximo()));
-            }
-
-            if (filtros.getSeqSeteMinimo() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_sete"), filtros.getSeqSeteMinimo()));
-            }
-            if (filtros.getSeqSeteMaximo() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_sete"), filtros.getSeqSeteMaximo()));
-            }
-
-            if (filtros.getSeqOitoMinimo() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("seq_oito"), filtros.getSeqOitoMinimo()));
-            }
-            if (filtros.getSeqOitoMaximo() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("seq_oito"), filtros.getSeqOitoMaximo()));
-            }
-
             // Filtros de pontos
             if (filtros.getPontosMinimo() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("pontos"), filtros.getPontosMinimo()));
@@ -123,20 +80,14 @@ public class SugestaoPersonalizadaService {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("pontos"), filtros.getPontosMaximo()));
             }
 
-            // Filtros de linha
-            if (filtros.getLinhaMinimo() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("linha"), filtros.getLinhaMinimo()));
-            }
-            if (filtros.getLinhaMaximo() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("linha"), filtros.getLinhaMaximo()));
+            // Filtros de linha que não devem aprecer
+            if (filtros.getLinhasSelecionadas() != null && !filtros.getLinhasSelecionadas().isEmpty()) {
+                predicates.add(criteriaBuilder.not(root.get("linha").in(filtros.getLinhasSelecionadas())));
             }
 
-            // Filtros de coluna
-            if (filtros.getColunaMinimo() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("coluna"), filtros.getColunaMinimo()));
-            }
-            if (filtros.getColunaMaximo() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("coluna"), filtros.getColunaMaximo()));
+            // Filtros de coluna que não devem aparecer
+            if (filtros.getColunasSelecionadas() != null && !filtros.getColunasSelecionadas().isEmpty()) {
+                predicates.add(criteriaBuilder.not(root.get("coluna").in(filtros.getColunasSelecionadas())));
             }
 
             // Filtro de já foi sorteado
