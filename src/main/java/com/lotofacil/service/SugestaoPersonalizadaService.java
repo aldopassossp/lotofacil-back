@@ -3,6 +3,7 @@ package com.lotofacil.service;
 import com.lotofacil.dto.sugestao.FiltroSugestaoDTO;
 import com.lotofacil.entity.Todos;
 import com.lotofacil.repository.TodosRepository;
+import com.lotofacil.util.TodosSpecifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,12 @@ public class SugestaoPersonalizadaService {
     private TodosRepository todosRepository;
 
     public Page<Todos> buscarSugestoes(FiltroSugestaoDTO filtros) {
+        Specification<Todos> spec = TodosSpecifications.comFiltros(filtros);
+        Pageable pageable = PageRequest.of(0, 50);
+        return todosRepository.findAll(spec, pageable);
+    }
+
+    public Page<Todos> buscarComFiltros(FiltroSugestaoDTO filtros) {
         log.info("Buscando sugestões personalizadas com filtros: {}", filtros);
 
         // Cria a especificação JPA dinamicamente com base nos filtros
