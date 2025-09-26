@@ -34,6 +34,7 @@ public class ResultadoController {
         @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
     public ResponseEntity<Sorteados> adicionarResultadoManual(@Valid @RequestBody ResultadoManualDTO resultadoManualDTO) {
+        System.out.println(resultadoManualDTO.toString());
         Sorteados novoResultado = resultadoService.adicionarResultadoManual(resultadoManualDTO);
         return new ResponseEntity<>(novoResultado, HttpStatus.CREATED);
     }

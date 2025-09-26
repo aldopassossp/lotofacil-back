@@ -162,5 +162,13 @@ public interface SorteadosRepository extends JpaRepository<Sorteados, Long> {
             nativeQuery = true)
     List<Object[]> getFrequenciaNumerosTodos();
 
+    // Busca o concurso imediatamente anterior
+    @Query("SELECT s FROM Sorteados s WHERE s.idSorteados < :id ORDER BY s.idSorteados DESC")
+    List<Sorteados> findUltimoAntes(@Param("id") Long id, Pageable pageable);
 
+    // Método default que retorna só 1 registro
+    default Sorteados findConcursoAnterior(Long id) {
+        List<Sorteados> lista = findUltimoAntes(id, Pageable.ofSize(1));
+        return lista.isEmpty() ? null : lista.get(0);
+    }
 }

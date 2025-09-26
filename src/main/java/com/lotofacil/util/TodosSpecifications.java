@@ -4,89 +4,100 @@ import com.lotofacil.dto.sugestao.FiltroSugestaoDTO;
 import com.lotofacil.entity.Todos;
 import org.springframework.data.jpa.domain.Specification;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TodosSpecifications {
 
     public static Specification<Todos> comFiltros(FiltroSugestaoDTO filtros) {
         return (root, query, cb) -> {
-            Specification<Todos> spec = Specification.where(null);
+            List<Predicate> predicates = new ArrayList<>();
 
-            // -------- SOMA --------
+            // ------- SOMA -------
             if (filtros.getSomaMinima() != null) {
-                spec = spec.and((r, q, c) -> c.greaterThanOrEqualTo(r.get("soma"), filtros.getSomaMinima()));
+                predicates.add(cb.greaterThanOrEqualTo(root.get("soma"), filtros.getSomaMinima()));
             }
             if (filtros.getSomaMaxima() != null) {
-                spec = spec.and((r, q, c) -> c.lessThanOrEqualTo(r.get("soma"), filtros.getSomaMaxima()));
+                predicates.add(cb.lessThanOrEqualTo(root.get("soma"), filtros.getSomaMaxima()));
             }
 
-            // -------- PARES --------
+            // ------- PARES -------
             if (filtros.getParesMinimo() != null) {
-                spec = spec.and((r, q, c) -> c.greaterThanOrEqualTo(r.get("pares"), filtros.getParesMinimo()));
+                predicates.add(cb.greaterThanOrEqualTo(root.get("pares"), filtros.getParesMinimo()));
             }
             if (filtros.getParesMaximo() != null) {
-                spec = spec.and((r, q, c) -> c.lessThanOrEqualTo(r.get("pares"), filtros.getParesMaximo()));
+                predicates.add(cb.lessThanOrEqualTo(root.get("pares"), filtros.getParesMaximo()));
             }
 
-            // -------- SEQUÊNCIAS --------
-            // Seq 2
+            // ------- SEQUÊNCIAS (2 e 3) -------
             if (filtros.getSeqDoisMinimo() != null) {
-                spec = spec.and((r, q, c) -> c.greaterThanOrEqualTo(r.get("seq_dois"), filtros.getSeqDoisMinimo()));
+                predicates.add(cb.greaterThanOrEqualTo(root.get("seq_dois"), filtros.getSeqDoisMinimo()));
             }
             if (filtros.getSeqDoisMaximo() != null) {
-                spec = spec.and((r, q, c) -> c.lessThanOrEqualTo(r.get("seq_dois"), filtros.getSeqDoisMaximo()));
+                predicates.add(cb.lessThanOrEqualTo(root.get("seq_dois"), filtros.getSeqDoisMaximo()));
             }
 
-            // Seq 3
             if (filtros.getSeqTresMinimo() != null) {
-                spec = spec.and((r, q, c) -> c.greaterThanOrEqualTo(r.get("seq_tres"), filtros.getSeqTresMinimo()));
+                predicates.add(cb.greaterThanOrEqualTo(root.get("seq_tres"), filtros.getSeqTresMinimo()));
             }
             if (filtros.getSeqTresMaximo() != null) {
-                spec = spec.and((r, q, c) -> c.lessThanOrEqualTo(r.get("seq_tres"), filtros.getSeqTresMaximo()));
+                predicates.add(cb.lessThanOrEqualTo(root.get("seq_tres"), filtros.getSeqTresMaximo()));
             }
 
-            // -------- PONTOS --------
+            // ------- PONTOS -------
             if (filtros.getPontosMinimo() != null) {
-                spec = spec.and((r, q, c) -> c.greaterThanOrEqualTo(r.get("pontos"), filtros.getPontosMinimo()));
+                predicates.add(cb.greaterThanOrEqualTo(root.get("pontos"), filtros.getPontosMinimo()));
             }
             if (filtros.getPontosMaximo() != null) {
-                spec = spec.and((r, q, c) -> c.lessThanOrEqualTo(r.get("pontos"), filtros.getPontosMaximo()));
+                predicates.add(cb.lessThanOrEqualTo(root.get("pontos"), filtros.getPontosMaximo()));
             }
 
-            // -------- LINHAS -------- (NOT IN → excluir selecionadas)
+            // ------- LINHAS (NOT IN) -------
             if (filtros.getLinhasSelecionadas() != null && !filtros.getLinhasSelecionadas().isEmpty()) {
-                spec = spec.and((r, q, c) -> c.not(r.get("linha").in(filtros.getLinhasSelecionadas())));
+                predicates.add(cb.not(root.get("linha").in(filtros.getLinhasSelecionadas())));
             }
 
-            // -------- COLUNAS -------- (NOT IN → excluir selecionadas)
+            // ------- COLUNAS (NOT IN) -------
             if (filtros.getColunasSelecionadas() != null && !filtros.getColunasSelecionadas().isEmpty()) {
-                spec = spec.and((r, q, c) -> c.not(r.get("coluna").in(filtros.getColunasSelecionadas())));
+                predicates.add(cb.not(root.get("coluna").in(filtros.getColunasSelecionadas())));
             }
 
-            // -------- SORTEADO --------
+            // ------- SORTEADO (tratamento dinâmico) -------
             if (filtros.getJaFoiSorteado() != null) {
-                int valor = filtros.getJaFoiSorteado() ? 1 : 0;
-                spec = spec.and((r, q, c) -> cb.equal(root.get("sorteado"), valor));
+                Path<?> sorteadoPath = root.get("sorteado");
+                Boolean js = filtros.getJaFoiSorteado();
+                // detecta tipo do path na entidade e compara adequadamente
+                if (sorteadoPath.getJavaType().equals(Boolean.class) || sorteadoPath.getJavaType().equals(boolean.class)) {
+                    predicates.add(cb.equal(sorteadoPath.as(Boolean.class), js));
+                } else {
+                    // supõe 0/1 armazenado como Integer/TINYINT
+                    int valor = js ? 1 : 0;
+                    predicates.add(cb.equal(sorteadoPath.as(Integer.class), valor));
+                }
             }
 
-            // -------- NÚMEROS OBRIGATÓRIOS --------
+            // ------- NÚMEROS OBRIGATÓRIOS (sequencia) -------
             if (filtros.getNumerosObrigatorios() != null && !filtros.getNumerosObrigatorios().isEmpty()) {
                 for (Integer numero : filtros.getNumerosObrigatorios()) {
-                    String numFormatado = String.format("%02d", numero); // garante 2 dígitos
-                    spec = spec.and((r, q, c) -> c.like(r.get("sequencia"), "%" + numFormatado + "%"));
+                    String numFormatado = String.format("%02d", numero);
+                    // use "-XX-" se sua coluna sequencia tiver hífen inicial/final garantido
+                    predicates.add(cb.like(root.get("sequencia"), "%-" + numFormatado + "-%"));
                 }
             }
 
-            // -------- NÚMEROS PROIBIDOS --------
+            // ------- NÚMEROS PROIBIDOS (sequencia) -------
             if (filtros.getNumerosProibidos() != null && !filtros.getNumerosProibidos().isEmpty()) {
                 for (Integer numero : filtros.getNumerosProibidos()) {
-                    String numFormatado = String.format("%02d", numero); // garante 2 dígitos
-                    spec = spec.and((r, q, c) -> c.notLike(r.get("sequencia"), "%" + numFormatado + "%"));
+                    String numFormatado = String.format("%02d", numero);
+                    predicates.add(cb.notLike(root.get("sequencia"), "%-" + numFormatado + "-%"));
                 }
             }
 
-            return spec.toPredicate(root, query, cb);
+            // Se quiser evitar usar "-XX-" e não garantir hífen nos dados, troque "%-XX-%" por "%XX%" (menos preciso).
+
+            // Retorna o AND de todos os predicados
+            return predicates.isEmpty() ? cb.conjunction() : cb.and(predicates.toArray(new Predicate[0]));
         };
     }
 }
-

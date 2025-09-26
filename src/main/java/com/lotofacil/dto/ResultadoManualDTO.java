@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ResultadoManualDTO {
 
-    @NotNull(message = "Número do concurso é obrigatório")
+  //  @NotNull(message = "Número do concurso é obrigatório")
     private Integer id_sorteados;
 
     @NotEmpty(message = "Data do sorteio é obrigatória")
